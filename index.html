@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia Novitas - Частная Школа</title>
+    <link rel="icon" type="image/x-icon" href="img/logo_letters.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Подключаем стили для слайдера Swiper.js -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .hero-bg-pattern {
+            background-repeat: no-repeat;
+            background-position: right 10% center;
+            background-size: 300px;
+        }
+        @media (max-width: 1024px) {
+            .hero-bg-pattern {
+                background-position: center;
+                background-size: 200px;
+            }
+        }
+        /* Стили для пустых изображений-плейсхолдеров */
+        img[src=""] {
+            background-color: #e5e7eb; /* Светло-серый фон */
+        }
+
+        /* === СТИЛИ ДЛЯ СЛАЙДЕРОВ === */
+        .swiper-button-next, .swiper-button-prev {
+            color: #1d3320 !important; /* Цвет стрелок, !important для переопределения стилей Swiper */
+            transition: transform 0.2s ease;
+        }
+        .swiper-button-next:hover, .swiper-button-prev:hover {
+            transform: scale(1.1);
+        }
+        .swiper-pagination-bullet-active {
+            background-color: #1d3320 !important; /* Цвет активной точки */
+        }
+
+        /* Позиционирование стрелок для слайдера учителей */
+        .teachers-arrow {
+            top: 40%;
+        }
+        .swiper-button-prev.teachers-arrow {
+            left: -10px;
+        }
+        .swiper-button-next.teachers-arrow {
+            right: -10px;
+        }
+
+        /* Позиционирование стрелок для слайдера отзывов */
+        .testimonials-arrow {
+            top: 45%;
+        }
+        .swiper-button-prev.testimonials-arrow {
+            left: -20px;
+        }
+        .swiper-button-next.testimonials-arrow {
+            right: -20px;
+        }
+
+        /* Скрываем стрелки на мобильных устройствах, так как удобнее использовать свайп */
+        @media (max-width: 767px) {
+            .swiper-button-next, .swiper-button-prev {
+                display: none;
+            }
+        }
+    </style>
+    <script>
+        // Конфигурация Tailwind CSS для добавления фирменных цветов и шрифтов
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-dark-green': '#1d3320',
+                        'brand-light-green': '#d8dfae',
+                        'brand-dark-beige': '#deb88a',
+                        'brand-light-beige': '#F7F1F1',
+                        'brand-cream': '#FAF6F0',
+                    },
+                    fontFamily: {
+                        heading: ['Cormorant Garamond', 'serif'],
+                        body: ['Mulish', 'sans-serif'],
+                    },
+                },
+            },
+        };
+    </script>
+</head>
+<body class="bg-brand-light-beige font-body text-brand-dark-green">
+
+    <!-- ===== HEADER ===== -->
+    <header class="absolute top-0 left-0 w-full z-20 p-6 md:px-12 md:py-8">
+        <div class="container mx-auto flex justify-between items-center">
+            <!-- Логотип -->
+            <a href="#" class="w-[110px] flex-shrink-0">
+                <img src="img/logo_white.png" alt="Логотип Academia Novitas">
+            </a>
+            <!-- Навигация для десктопа -->
+            <nav class="hidden lg:flex items-center space-x-10 text-white md:text-brand-dark-green">
+                <a href="#main" class="hover:text-brand-dark-beige transition-colors">Главная</a>
+                <a href="#about" class="hover:text-brand-dark-beige transition-colors">О нас</a>
+                <a href="#teachers" class="hover:text-brand-dark-beige transition-colors">Учителя</a>
+                <a href="#admissions" class="hover:text-brand-dark-beige transition-colors">Поступление</a>
+                <a href="#contacts" class="hover:text-brand-dark-beige transition-colors">Контакты</a>
+            </nav>
+            <!-- Кнопка мобильного меню (бургер) -->
+            <div class="lg:hidden">
+                <button id="menu-btn" class="z-30 text-white md:text-brand-dark-green">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <!-- Мобильное меню -->
+        <div id="mobile-menu" class="hidden lg:hidden fixed inset-0 bg-brand-dark-green/95 backdrop-blur-sm z-20">
+            <nav class="flex flex-col items-center justify-center h-full space-y-8 text-2xl text-white">
+                <a href="#main" class="mobile-link hover:text-brand-dark-beige transition-colors">Главная</a>
+                <a href="#about" class="mobile-link hover:text-brand-dark-beige transition-colors">О нас</a>
+                <a href="#teachers" class="mobile-link hover:text-brand-dark-beige transition-colors">Учителя</a>
+                <a href="#admissions" class="mobile-link hover:text-brand-dark-beige transition-colors">Поступление</a>
+                <a href="#contacts" class="mobile-link hover:text-brand-dark-beige transition-colors">Контакты</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main">
+
+        <!-- ===== HERO SECTION ===== -->
+        <section class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+            <!-- Левая часть с фото -->
+            <div class="h-96 lg:h-auto bg-cover bg-center bg-gray-300" style="background-image: url('img/school_bg.png')"></div>
+            <!-- Правая часть с контентом -->
+            <div class="bg-brand-light-green flex items-center justify-center p-8 md:p-16 hero-bg-pattern">
+                <div class="max-w-md text-center">
+                    <img src="img/logo_letters.png" alt="Логотип Academia Novitas" class="mx-auto mb-8 w-32" style="object-fit: fill;">
+                    <h1 class="font-heading text-5xl md:text-6xl font-semibold">ACADEMIA NOVITAS</h1>
+                    <p class="font-body text-sm tracking-widest mb-8">PRIVATE SCHOOL</p>
+                    <p class="mb-10 text-lg">
+                        Формируем прочный фундамент для будущего, воспитывая образованных, уверенных в себе и счастливых личностей.
+                    </p>
+                    <a href="#about" class="inline-block py-3 px-10 border border-brand-dark-green rounded-md hover:bg-brand-dark-green hover:text-white transition-all duration-300 tracking-widest text-sm">
+                        ПРОСТРАНСТВО ВОЗМОЖНОСТЕЙ
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TEACHERS SECTION ===== -->
+        <section id="teachers" class="bg-brand-cream py-20 md:py-32">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                     <h2 class="font-heading text-4xl md:text-5xl leading-tight">Познакомьтесь с нашими учителями</h2>
+                </div>
+                <!-- Контейнер для слайдера и стрелок -->
+                <div class="relative max-w-6xl mx-auto">
+                    <div class="swiper teachers-slider">
+                        <div class="swiper-wrapper">
+                            <!-- Карточка учителя 1 -->
+                            <div class="swiper-slide text-center">
+                                <img src="img/1.webp" alt="Кадирова Мухаббат Хамидовна" class="w-40 h-40 rounded-full mx-auto mb-4 object-cover">
+                                <h3 class="font-heading text-2xl">Кадирова Мухаббат Хамидовна</h3>
+                                <p class="text-brand-dark-beige">Директор</p>
+                            </div>
+                            <!-- Карточка учителя 3 (Пример) -->
+                            <div class="swiper-slide text-center">
+                                <img src="img/2.webp" alt="Имя Фамилия" class="w-40 h-40 rounded-full mx-auto mb-4 object-cover">
+                                <h3 class="font-heading text-2xl">Кучкарова Марина Павловна</h3>
+                                <p class="text-brand-dark-beige">Завуч, преподаватель математики</p>
+                            </div>
+                            <!-- Карточка учителя 2 -->
+                            <div class="swiper-slide text-center">
+                                <img src="img/5.webp" alt="Кодирова Наргиза Бахтияровна" class="w-40 h-40 rounded-full mx-auto mb-4 object-cover">
+                                <h3 class="font-heading text-2xl">Кодирова Наргиза Бахтияровна</h3>
+                                <p class="text-brand-dark-beige">Преподаватель государственного языка</p>
+                            </div>
+                             <!-- Карточка учителя 4 (Пример) -->
+                            <div class="swiper-slide text-center">
+                                 <img src="img/3.webp" alt="Имя Фамилия" class="w-40 h-40 rounded-full mx-auto mb-4 object-cover">
+                                <h3 class="font-heading text-2xl">Завальская Ирина Владимировна</h3>
+                                <p class="text-brand-dark-beige">Психолог, преподаватель ИЗО.</p>
+                            </div>
+                            <div class="swiper-slide text-center">
+                                 <img src="img/6.webp" alt="Имя Фамилия" class="w-40 h-40 rounded-full mx-auto mb-4 object-cover">
+                                <h3 class="font-heading text-2xl">Вон Игорь Русланович</h3>
+                                <p class="text-brand-dark-beige">Преподаватель музыки.</p>
+                            </div>
+                            <div class="swiper-slide text-center">
+                                 <img src="img/4.webp" alt="Имя Фамилия" class="w-40 h-40 rounded-full mx-auto mb-4 object-cover">
+                                <h3 class="font-heading text-2xl">Абдуллаева Лола Нуманхановна</h3>
+                                <p class="text-brand-dark-beige">Преподаватель начальных классов.</p>
+                            </div>
+                            <div class="swiper-slide text-center">
+                                 <img src="img/7.webp" alt="Имя Фамилия" class="w-40 h-40 rounded-full mx-auto mb-4 object-cover">
+                                <h3 class="font-heading text-2xl">Касимова Рано Гуламовна</h3>
+                                <p class="text-brand-dark-beige">Преподаватель русского языка, чтения, риторики</p>
+                            </div>
+                            <div class="swiper-slide text-center">
+                                 <img src="img/8.webp" alt="Имя Фамилия" class="w-40 h-40 rounded-full mx-auto mb-4 object-cover">
+                                <h3 class="font-heading text-2xl">Садикова Зебинисо Мирзоулугбековна</h3>
+                                <p class="text-brand-dark-beige">Преподаватель английского языка</p>
+                            </div>
+                            <div class="swiper-slide text-center">
+                                 <img src="img/9.webp" alt="Имя Фамилия" class="w-40 h-40 rounded-full mx-auto mb-4 object-cover">
+                                <h3 class="font-heading text-2xl">Лучникова Марина Генадьевна</h3>
+                                <p class="text-brand-dark-beige">Учитель начальных классов</p>
+                            </div>
+                            <div class="swiper-slide text-center">
+                                 <img src="img/10.webp" alt="Имя Фамилия" class="w-40 h-40 rounded-full mx-auto mb-4 object-cover">
+                                <h3 class="font-heading text-2xl">Пирматова Мунаввара Мирзакаримовна</h3>
+                                <p class="text-brand-dark-beige">Преподаватель арабского языка</p>
+                            </div>
+                        </div>
+                        <!-- Пагинация (точки) -->
+                        <div class="swiper-pagination mt-8 relative"></div>
+                    </div>
+                    <!-- Кнопки-стрелки -->
+                    <div class="swiper-button-prev teachers-arrow"></div>
+                    <div class="swiper-button-next teachers-arrow"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CALL TO ACTION SECTION ===== -->
+        <section class="min-h-[70vh] bg-cover bg-center bg-fixed flex items-center justify-center p-8 bg-gray-500" style="background-image: url('img/girl_bg.png')">
+            <div class="text-center max-w-3xl text-white bg-black/30 backdrop-blur-sm p-8 rounded-lg">
+                <h2 class="font-heading text-4xl md:text-6xl leading-tight font-semibold">Безграничная любовь к детям и высокий профессионализм — залог нашего успеха</h2>
+                <a href="#admissions" class="mt-8 inline-block py-3 px-10 border border-white rounded-md hover:bg-white hover:text-brand-dark-green transition-all duration-300 text-lg">
+                    Записаться к нам
+                </a>
+            </div>
+        </section>
+        
+        <!-- ===== ABOUT US / PHILOSOPHY SECTION ===== -->
+        <section id="about" class="py-20 md:py-32 bg-brand-light-beige">
+            <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="font-body tracking-widest text-brand-dark-beige">НАША ФИЛОСОФИЯ</span>
+                    <h2 class="font-heading text-4xl md:text-5xl mt-2 mb-6">Более 20 лет создаем прочный фундамент для будущего</h2>
+                    <p class="mb-4">
+                        Academia Novitas — это не просто школа, а место, где история и традиции встречаются с инновациями. Мы гордимся нашей безупречной репутацией и уникальным подходом, который позволяет раскрыть потенциал каждого ребенка.
+                    </p>
+                    <p>
+                        Наша миссия — воспитать образованную, культурную и гармонично развитую личность, готовую к вызовам современного мира. Мы создаем атмосферу заботы, уважения и поддержки, формируя прочную базу знаний и навыков для дальнейшего успеха.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <img src="https://placehold.co/400x500/d8dfae/1d3320?text=Фото" class="rounded-lg object-cover w-full h-full aspect-[4/5]" alt="Фото кампуса 1">
+                    <img src="https://placehold.co/400x500/d8dfae/1d3320?text=Фото" class="rounded-lg object-cover w-full h-full aspect-[4/5] mt-0 sm:mt-8" alt="Фото учеников">
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== ADMISSIONS SECTION ===== -->
+        <section id="admissions" class="py-20 md:py-32 bg-brand-cream">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="font-heading text-4xl md:text-5xl">Процесс поступления</h2>
+                <p class="max-w-2xl mx-auto mt-4 mb-12">Мы рады приветствовать новые семьи в нашем сообществе. Узнайте, как стать частью Academia Novitas.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <!-- Шаг 1 -->
+                    <div class="p-8 border border-brand-light-green rounded-lg">
+                        <div class="font-heading text-5xl text-brand-light-green mb-4">01</div>
+                        <h3 class="font-heading text-2xl mb-2">Заявка</h3>
+                        <p>Свяжитесь с нами по телефону или по Telegram, нажав на кнопку ниже</p>
+                    </div>
+                    <!-- Шаг 2 -->
+                    <div class="p-8 border border-brand-light-green rounded-lg">
+                        <div class="font-heading text-5xl text-brand-light-green mb-4">02</div>
+                        <h3 class="font-heading text-2xl mb-2">Знакомство</h3>
+                        <p>Мы пригласим вас и вашего ребенка на встречу-собеседование и экскурсию по школе.</p>
+                    </div>
+                    <!-- Шаг 3 -->
+                    <div class="p-8 border border-brand-light-green rounded-lg">
+                        <div class="font-heading text-5xl text-brand-light-green mb-4">03</div>
+                        <h3 class="font-heading text-2xl mb-2">Зачисление</h3>
+                        <p>После успешного прохождения всех этапов мы будем рады официально принять вас в нашу семью.</p>
+                    </div>
+                </div>
+                <a href="https://t.me/YOUR_TELEGRAM_USERNAME" target="_blank" rel="noopener noreferrer" class="mt-12 inline-block py-3 px-10 bg-brand-dark-green text-white rounded-md hover:bg-brand-dark-beige hover:text-brand-dark-green transition-all duration-300 text-lg">
+                    Связаться с нами
+                </a>
+            </div>
+        </section>
+
+        <!-- ===== TESTIMONIALS SECTION ===== -->
+        <section id="testimonials" class="py-20 md:py-32 bg-brand-light-beige">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                     <h2 class="font-heading text-4xl md:text-5xl leading-tight">Что говорят о нас родители</h2>
+                </div>
+                <!-- Контейнер для слайдера и стрелок -->
+                <div class="relative max-w-3xl mx-auto">
+                    <div class="swiper testimonials-slider">
+                        <div class="swiper-wrapper">
+                            <!-- Отзыв 1 -->
+                            <div class="swiper-slide text-center px-4">
+                                <blockquote class="text-lg md:text-xl italic mb-6">
+                                    Наша уважаемая Мухаббат Хамидовна,и все уважаемые учителя Навруз Болажон,хочу вам выразить огромную благодарность за ваш упорный труд,сегодня я очередной раз гордилась,что мои дети получают образование именно в вашем центре,он настолько нам родным стал,что в сегодняшний вечер не смогла удержать свои слёзы,безумно приятно было смотреть на всё шоу,танцы ,поздравления,это благодаря вашему труду,спасибо вам за знания Муниры,она благодаря вам,многому научилась,выросла,большую часть находилась в школе,поэтому это ваш труд, благодарим ещё раз вас!
+                                </blockquote>
+                                <h3 class="font-heading text-2xl">Джалалова Юлдуз</h3>
+                            </div>
+                             <!-- Отзыв 2 -->
+                            <div class="swiper-slide text-center px-4">
+                               <blockquote class="text-lg md:text-xl italic mb-6">
+                                    "Academia Novitas — отличная школа,отличные учителя,дети очень хорошие и воспитанные,потому что от школы очень много зависит"
+                                </blockquote>
+                                <h3 class="font-heading text-2xl">Ирода Усманова</h3>
+                            </div>
+                        </div>
+                        <!-- Пагинация (точки) -->
+                        <div class="swiper-pagination mt-8 relative"></div>
+                    </div>
+                    <!-- Кнопки-стрелки -->
+                    <div class="swiper-button-prev testimonials-arrow"></div>
+                    <div class="swiper-button-next testimonials-arrow"></div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ===== GOOGLE MAPS SECTION ===== -->
+        <section id="map">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1007.8198172988549!2d72.33902533493018!3d40.80495767487535!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38bceb362c58b25d%3A0x615a04ef882002d8!2sNou%22%20Navruz%20Bolazhon%22!5e0!3m2!1sen!2s!4v1756999669676!5m2!1sen!2s"
+                width="100%" 
+                height="450" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </section>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer id="contacts" class="bg-brand-dark-green text-brand-light-beige pt-20 pb-8">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <!-- Лого и описание -->
+                <div class="lg:col-span-2">
+                    <h3 class="font-heading text-3xl mb-4">Academia Novitas</h3>
+                    <p class="max-w-sm text-brand-light-green">Частная школа с более чем 20-летней историей, формирующая надежный фундамент для успешного будущего вашего ребенка.</p>
+                </div>
+                <!-- Навигация -->
+                <div>
+                    <h4 class="font-heading text-xl mb-4">Навигация</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#main" class="hover:text-white transition">Главная</a></li>
+                        <li><a href="#about" class="hover:text-white transition">О нас</a></li>
+                        <li><a href="#teachers" class="hover:text-white transition">Учителя</a></li>
+                        <li><a href="#admissions" class="hover:text-white transition">Поступление</a></li>
+                    </ul>
+                </div>
+                <!-- Контакты -->
+                <div>
+                    <h4 class="font-heading text-xl mb-4">Контакты</h4>
+                    <ul class="space-y-2 text-brand-light-green">
+                        <li><a href="tel:+998742375556" class="hover:text-white transition">+998 74 237-55-56</a></li>
+                        <li><a href="tel:+998742374566" class="hover:text-white transition">+998 74 237-45-66</a></li>
+                        <li>Республика Узбекистан, город Андижан, ул.Чуама, 42а</li>
+                    </ul>
+                    <!-- Соцсети -->
+                    <div class="flex space-x-4 mt-6">
+                        <a href="https://www.instagram.com/academianovitas?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" class="hover:opacity-75">
+                           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.012-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.345 2.525c.636-.247 1.363-.416 2.427-.465C9.793 2.013 10.147 2 12.315 2zm0 1.62c-2.403 0-2.748.01-3.725.058-.975.045-1.504.207-1.857.344-.467.182-.86.399-1.249.788-.389.389-.606.782-.788 1.249-.137.353-.3.882-.344 1.857-.048.977-.058 1.322-.058 3.725s.01 2.748.058 3.725c.045.975.207 1.504.344 1.857.182.466.399.86.788 1.249.389.389.782.606 1.249.788.353.137.882.3 1.857.344.977.048 1.322.058 3.725.058s2.748-.01 3.725-.058c.975-.045 1.504-.207 1.857-.344.467-.182.86-.399 1.249-.788.389-.389.606-.782-.788-1.249.137-.353.3-.882.344-1.857.048-.977.058-1.322.058-3.725s-.01-2.748-.058-3.725c-.045-.975-.207-1.504-.344-1.857a3.097 3.097 0 00-.788-1.249 3.097 3.097 0 00-1.249-.788c-.353-.137-.882-.3-1.857-.344-.977-.048-1.322-.058-3.725-.058zM12 6.865a5.135 5.135 0 100 10.27 5.135 5.135 0 000-10.27zm0 8.632a3.5 3.5 0 110-7 3.5 3.5 0 010 7zm5.338-9.87a1.2 1.2 0 100-2.4 1.2 1.2 0 000 2.4z" clip-rule="evenodd" /></svg>
+                        </a>
+                        <a href="https://www.facebook.com/people/Academia-Novitas/61578101771399/?mibextid=wwXIfr&rdid=nlNarQtXKu0yx6ZB&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1G3eZFvroY%2F%3Fmibextid%3DwwXIfr" class="hover:opacity-75">
+                           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12c0-5.523-4.477-10-10-10z" /></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 border-t border-gray-700 pt-8 text-center text-sm text-brand-light-green">
+                <p>&copy; 2025 Academia Novitas. Все права защищены.</p>
+                <br>
+                <p>Developed by Yusufbek Zayniddinov</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Подключаем скрипт для слайдера Swiper.js -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+    <script>
+        // === СКРИПТ ДЛЯ МОБИЛЬНОГО МЕНЮ ===
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        const toggleMenu = () => {
+            mobileMenu.classList.toggle('hidden');
+            // Блокируем прокрутку страницы, когда меню открыто
+            document.body.style.overflow = mobileMenu.classList.contains('hidden') ? 'auto' : 'hidden';
+        };
+
+        menuBtn.addEventListener('click', toggleMenu);
+        // Закрываем меню при клике на ссылку
+        mobileLinks.forEach(link => link.addEventListener('click', toggleMenu));
+
+
+        // === СКРИПТ ДЛЯ СЛАЙДЕРА УЧИТЕЛЕЙ ===
+        const teachersSwiper = new Swiper('.teachers-slider', {
+            loop: true,
+            slidesPerView: 1,
+            spaceBetween: 20,
+            grabCursor: true, // Добавляем иконку "руки" при наведении
+            pagination: {
+                el: '.teachers-slider .swiper-pagination', // Уточняем селектор для пагинации
+                clickable: true,
+            },
+            // Подключаем стрелки
+            navigation: {
+                nextEl: '.teachers-arrow.swiper-button-next',
+                prevEl: '.teachers-arrow.swiper-button-prev',
+            },
+            // Адаптивность: количество слайдов в зависимости от ширины экрана
+            breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                    spaceBetween: 30,
+                },
+                1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 40,
+                },
+            },
+        });
+
+        // === СКРИПТ ДЛЯ СЛАЙДЕРА ОТЗЫВОВ ===
+        const testimonialsSwiper = new Swiper('.testimonials-slider', {
+            loop: true,
+            slidesPerView: 1,
+            spaceBetween: 30,
+            grabCursor: true,
+            autoHeight: true, // Автоматическая высота под контент отзыва
+            pagination: {
+                el: '.testimonials-slider .swiper-pagination', // Уточняем селектор для пагинации
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.testimonials-arrow.swiper-button-next',
+                prevEl: '.testimonials-arrow.swiper-button-prev',
+            },
+        });
+    </script>
+</body>
+</html>
