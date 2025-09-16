@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления - Academia Novitas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Mulish', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        .hidden { display: none; }
+        /* Стиль для индикатора загрузки */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- === ЭКРАН ВХОДА === -->
+    <div id="login-view" class="flex items-center justify-center min-h-screen">
+        <div class="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold text-center">Вход в панель управления</h2>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium">Email</label>
+                    <input type="email" id="email" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium">Пароль</label>
+                    <input type="password" id="password" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200">
+                </div>
+                <button type="submit" class="w-full px-4 py-2 font-bold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Войти</button>
+                <p id="login-error" class="text-sm text-red-600 text-center"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- === ПАНЕЛЬ УПРАВЛЕНИЯ (СКРЫТА ПО УМОЛЧАНИЮ) === -->
+    <div id="dashboard-view" class="hidden">
+        <header class="bg-white shadow-sm">
+            <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <h1 class="text-xl font-bold">Управление новостями</h1>
+                <button id="logout-btn" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">Выйти</button>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-6 py-8">
+            <!-- Форма добавления/редактирования новости -->
+            <div class="p-6 mb-8 bg-white rounded-lg shadow">
+                <h2 id="form-title" class="text-lg font-semibold mb-4">Добавить новую запись</h2>
+                <form id="news-form" class="space-y-4">
+                    <input type="hidden" id="news-id">
+                    <input type="hidden" id="existing-image-url"> <!-- Для хранения URL при редактировании -->
+                    <div>
+                        <label for="news-title" class="block text-sm font-medium">Заголовок</label>
+                        <input type="text" id="news-title" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label for="news-content" class="block text-sm font-medium">Содержание</label>
+                        <textarea id="news-content" rows="4" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md"></textarea>
+                    </div>
+                    <div>
+                        <label for="news-image-upload" class="block text-sm font-medium">Изображение</label>
+                        <input type="file" id="news-image-upload" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 mt-1">
+                        <img id="image-preview" src="" alt="Предпросмотр" class="mt-2 rounded-md max-h-40 hidden">
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button type="submit" id="submit-btn" class="px-6 py-2 font-bold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 flex items-center">
+                            <span id="submit-btn-text">Сохранить</span>
+                            <div id="submit-loader" class="loader ml-2 hidden"></div>
+                        </button>
+                        <button type="button" id="cancel-edit-btn" class="hidden px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">Отмена</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Список существующих новостей -->
+            <div class="p-6 bg-white rounded-lg shadow">
+                <h2 class="text-lg font-semibold mb-4">Опубликованные новости</h2>
+                <div id="news-list" class="space-y-4">
+                    <p>Загрузка...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-storage-compat.js"></script>
+
+    <script>
+        // === КОНФИГУРАЦИЯ FIREBASE ===
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUbN_YJpvoohuLwDr-T_gzgQ8z2rOroyU",
+            authDomain: "academia-novitas.firebaseapp.com",
+            projectId: "academia-novitas",
+            storageBucket: "academia-novitas.firebasestorage.app",
+            messagingSenderId: "169345459322",
+            appId: "1:169345459322:web:c306f27b2eb2edc83a47c3",
+            measurementId: "G-HVSB9S2BSY"
+        };
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        const newsCollection = db.collection('news');
+
+        // === ЭЛЕМЕНТЫ DOM ===
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const logoutBtn = document.getElementById('logout-btn');
+        const newsForm = document.getElementById('news-form');
+        const formTitle = document.getElementById('form-title');
+        const newsIdInput = document.getElementById('news-id');
+        const newsTitleInput = document.getElementById('news-title');
+        const newsContentInput = document.getElementById('news-content');
+        const newsImageUploadInput = document.getElementById('news-image-upload');
+        const existingImageUrlInput = document.getElementById('existing-image-url');
+        const imagePreview = document.getElementById('image-preview');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        const newsList = document.getElementById('news-list');
+        const submitBtn = document.getElementById('submit-btn');
+        const submitBtnText = document.getElementById('submit-btn-text');
+        const submitLoader = document.getElementById('submit-loader');
+
+
+        // === АУТЕНТИФИКАЦИЯ ===
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+            auth.signInWithEmailAndPassword(email, password)
+                .catch(error => {
+                    console.error("Login error:", error);
+                    loginError.textContent = "Неверный email или пароль.";
+                });
+        });
+
+        logoutBtn.addEventListener('click', () => auth.signOut());
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                loginView.classList.add('hidden');
+                dashboardView.classList.remove('hidden');
+                loadNews();
+            } else {
+                loginView.classList.remove('hidden');
+                dashboardView.classList.add('hidden');
+            }
+        });
+
+        // === УПРАВЛЕНИЕ НОВОСТЯМИ (CRUD) ===
+        
+        // Показываем превью выбранного изображения
+        newsImageUploadInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    imagePreview.src = event.target.result;
+                    imagePreview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.classList.add('hidden');
+            }
+        });
+        
+        // Отправка формы (создание или обновление)
+        newsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            toggleLoading(true);
+
+            const file = newsImageUploadInput.files[0];
+            let imageUrl = existingImageUrlInput.value; // Используем старый URL по умолчанию
+
+            try {
+                // Если выбран новый файл, загружаем его
+                if (file) {
+                    const filePath = `news-images/${Date.now()}_${file.name}`;
+                    const fileRef = storage.ref(filePath);
+                    const snapshot = await fileRef.put(file);
+                    imageUrl = await snapshot.ref.getDownloadURL();
+                }
+
+                const newsData = {
+                    title: newsTitleInput.value,
+                    content: newsContentInput.value,
+                    imageUrl: imageUrl, // URL нового или старого изображения
+                    date: new Date().toISOString()
+                };
+
+                const id = newsIdInput.value;
+                if (id) { // Обновление
+                    await newsCollection.doc(id).update(newsData);
+                } else { // Создание
+                    await newsCollection.add(newsData);
+                }
+                resetForm();
+
+            } catch (err) {
+                console.error("Ошибка сохранения:", err);
+                alert("Произошла ошибка при сохранении новости.");
+            } finally {
+                toggleLoading(false);
+            }
+        });
+        
+        // Загрузка и отображение новостей
+        const loadNews = () => {
+            newsCollection.orderBy('date', 'desc').onSnapshot(snapshot => {
+                if (snapshot.empty) {
+                    newsList.innerHTML = '<p>Новостей пока нет.</p>';
+                    return;
+                }
+                newsList.innerHTML = snapshot.docs.map(doc => {
+                    const news = doc.data();
+                    const id = doc.id;
+                    return `
+                        <div class="border p-4 rounded-md flex justify-between items-start gap-4">
+                            <img src="${news.imageUrl || 'https://placehold.co/100x100/e2e8f0/e2e8f0'}" alt="Image" class="w-16 h-16 object-cover rounded-md flex-shrink-0">
+                            <div class="flex-grow">
+                                <h3 class="font-bold">${news.title}</h3>
+                                <p class="text-sm text-gray-600">${news.content.substring(0, 100)}...</p>
+                            </div>
+                            <div class="flex-shrink-0 ml-4 space-x-2">
+                                <button onclick="editNews('${id}')" class="text-sm text-blue-600 hover:underline">Ред.</button>
+                                <button onclick="deleteNews('${id}')" class="text-sm text-red-600 hover:underline">Удал.</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }, err => {
+                console.error("Ошибка в snapshot listener:", err);
+                newsList.innerHTML = '<p class="text-red-500">Ошибка загрузки новостей. Проверьте правила безопасности Firestore.</p>';
+            });
+        };
+        
+        // Редактирование новости
+        window.editNews = (id) => {
+            newsCollection.doc(id).get().then(doc => {
+                const news = doc.data();
+                newsIdInput.value = id;
+                newsTitleInput.value = news.title;
+                newsContentInput.value = news.content;
+                
+                // Устанавливаем и показываем существующее изображение
+                existingImageUrlInput.value = news.imageUrl || '';
+                if(news.imageUrl) {
+                    imagePreview.src = news.imageUrl;
+                    imagePreview.classList.remove('hidden');
+                } else {
+                    imagePreview.classList.add('hidden');
+                }
+
+                formTitle.textContent = 'Редактировать запись';
+                cancelEditBtn.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            });
+        };
+
+        // Удаление новости
+        window.deleteNews = (id) => {
+            if (confirm('Вы уверены, что хотите удалить эту новость?')) {
+                newsCollection.doc(id).delete().catch(err => {
+                    console.error("Ошибка удаления:", err);
+                    alert("Не удалось удалить новость.");
+                });
+            }
+        };
+
+        // Управление состоянием загрузки кнопки
+        const toggleLoading = (isLoading) => {
+            if (isLoading) {
+                submitBtn.disabled = true;
+                submitBtnText.classList.add('hidden');
+                submitLoader.classList.remove('hidden');
+            } else {
+                submitBtn.disabled = false;
+                submitBtnText.classList.remove('hidden');
+                submitLoader.classList.add('hidden');
+            }
+        };
+
+        // Сброс формы
+        const resetForm = () => {
+            newsForm.reset();
+            newsIdInput.value = '';
+            existingImageUrlInput.value = '';
+            imagePreview.classList.add('hidden');
+            imagePreview.src = '';
+            formTitle.textContent = 'Добавить новую запись';
+            cancelEditBtn.classList.add('hidden');
+        };
+        
+        cancelEditBtn.addEventListener('click', resetForm);
+
+    </script>
+</body>
+</html>
